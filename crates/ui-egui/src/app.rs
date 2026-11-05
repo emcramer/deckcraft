@@ -97,6 +97,7 @@ impl SlideApp {
             ui_fonts: uifonts::UiFonts::default(),
             thumb_drag: None,
             selpane: selpane::State::default(),
+            source: crate::source_pane::State::default(),
             align_to: None,
             doc_window: None,
             sorter: sorter::State::default(),
@@ -331,6 +332,9 @@ impl SlideApp {
                 ViewMode::Outline | ViewMode::Normal | ViewMode::Reading => {
                     if self.ui.pane.is_some() {
                         panes::show(self, ui);
+                    }
+                    if self.source.open {
+                        crate::source_pane::show(self, ui);
                     }
                     if self.ui.view == ViewMode::Outline {
                         sorter::outline_pane(self, ui);

@@ -31,6 +31,7 @@ pub mod ribbon;
 pub mod settings;
 pub mod show;
 pub mod sorter;
+pub mod source_pane;
 pub mod status;
 pub mod textures;
 pub mod theme;
@@ -102,6 +103,7 @@ pub const UI_COMMANDS: &[(&str, &str, Option<&str>, &str)] = &[
     ("view.notesPage", "Notes Page", None, "{}"),
     ("view.reading", "Reading View", None, "{}"),
     ("view.notes", "Notes", None, "{on?: bool}"),
+    ("view.source", "Markdown Source", Some("Cmd+Shift+M"), "{on?: bool, path?: markdown file}"),
     ("view.ruler", "Ruler", None, "{on?: bool}"),
     ("view.gridlines", "Gridlines", Some("Shift+F9"), "{on?: bool}"),
     ("view.guides", "Guides", Some("Alt+F9"), "{on?: bool}"),
@@ -316,6 +318,8 @@ pub struct SlideApp {
     pub(crate) thumb_drag: Option<thumbs::SlideDrag>,
     /// Selection pane: folded groups, renaming, drag and drop.
     pub selpane: selpane::State,
+    /// MySlides markdown source pane.
+    pub source: source_pane::State,
     /// Arrange ▸ Align: Align to Slide (`true`) or Align Selected Objects, ticked for that selection.
     pub(crate) align_to: Option<(Vec<deckcraft_model::ShapeId>, bool)>,
     /// View › New Window: a second window on one presentation. `None` when it is closed.

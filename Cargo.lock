@@ -1280,6 +1280,7 @@ dependencies = [
  "deckcraft-geom",
  "deckcraft-media",
  "deckcraft-model",
+ "deckcraft-myslides",
  "deckcraft-render",
  "deckcraft-text",
  "egui",

@@ -50,6 +50,7 @@ impl SlideApp {
             "view.notesPage" => self.ui.view = ViewMode::NotesPage,
             "view.reading" => self.start_show(self.session.active().map(|d| d.selection.slide).unwrap_or(0), true),
             "view.notes" => self.ui.notes = self.flag(p, self.ui.notes),
+            "view.source" => return crate::source_pane::command(self, p),
             "view.ruler" => self.ui.ruler = self.flag(p, self.ui.ruler),
             "view.gridlines" => self.ui.gridlines = self.flag(p, self.ui.gridlines),
             "view.guides" => {
