@@ -135,6 +135,7 @@ pub fn specs() -> Vec<CommandSpec> {
             quick_style
         ),
         cmd!("shape.rename", "Rename", ["Selection Pane"], None, "{name, id?}", has_selection, rename),
+        cmd!("shape.tags", "Tags", ["Selection Pane"], None, "{set?: {name: value|null}, clear?: bool, ids?} (add-in tags kept with the shape; null removes one)", has_selection, tags),
         cmd!("shape.altText", "Alt Text", ["Shape Format", "Accessibility"], None, "{text, decorative?: bool, ids?}", has_selection, alt_text),
         cmd!("shape.visible", "Show/Hide", ["Selection Pane"], None, "{visible?: bool, ids?}", has_selection, visible),
         cmd!(
@@ -346,6 +347,43 @@ fn rename(s: &mut Session, p: &Value) -> Result<Value> {
     edit_shapes(s, p, "shape.rename", |sh| {
         sh.name = name.clone();
         Ok(())
+    })
+}
+
+fn tags(s: &mut Session, p: &Value) -> Result<Value> {
+    let set = p.get("set").and_then(Value::as_object).cloned().unwrap_or_default();
+    let clear = bool_param(p, "clear").unwrap_or(false);
+    for v in set.values() {
+        if !(v.is_string() || v.is_null()) {
+            return Err(bad("shape.tags", "tag values must be strings or null"));
+        }
+    }
+    // Not `edit_shapes`: tagging is metadata and must not pin a placeholder's inherited box.
+    let ids = crate::cmd::targets(s, p)?;
+    if ids.is_empty() {
+        return Err(bad("shape.tags", "no shapes selected"));
+    }
+    s.edit(|doc, sel| {
+        let shapes = crate::shapes_mut(doc, sel).ok_or_else(|| bad("shape.tags", "no slide"))?;
+        let mut n = 0;
+        for id in &ids {
+            if let Some(sh) = deckcraft_model::find_shape_mut(shapes, *id) {
+                if clear {
+                    sh.tags.clear();
+                }
+                for (k, v) in &set {
+                    sh.tags.retain(|(name, _)| name != k);
+                    if let Some(v) = v.as_str() {
+                        sh.tags.push((k.clone(), v.to_string()));
+                    }
+                }
+                n += 1;
+            }
+        }
+        if n == 0 {
+            return Err(bad("shape.tags", "no such shape"));
+        }
+        Ok(Value::from(n))
     })
 }
 
