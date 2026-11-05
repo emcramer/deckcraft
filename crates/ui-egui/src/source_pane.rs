@@ -225,16 +225,16 @@ pub fn show(app: &mut SlideApp, ui: &mut egui::Ui) {
     let now = ui.input(|i| i.time);
     poll(app, now);
     let t = crate::theme::Tokens::get(ui.ctx());
-    egui::SidePanel::left("myslides.source")
+    egui::Panel::left("myslides.source")
         .resizable(true)
-        .default_width(440.0)
-        .min_width(220.0)
+        .default_size(440.0)
+        .size_range(220.0..=1200.0)
         .frame(egui::Frame::NONE.fill(t.card).inner_margin(egui::Margin::same(8)))
-        .show_inside(ui, |ui| {
+        .show(ui, |ui| {
             ui.horizontal(|ui| {
                 ui.label(egui::RichText::new("Markdown source").font(crate::theme::bold(15.0)));
                 ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
-                    if ui.small_button("✕").on_hover_text("Hide (Cmd+Shift+M)").clicked() {
+                    if ui.small_button("Hide").on_hover_text("Hide (Cmd+Shift+M)").clicked() {
                         app.source.open = false;
                     }
                     if ui.small_button("Rebuild").on_hover_text("Rebuild every slide from the source").clicked() {
@@ -269,7 +269,7 @@ pub fn show(app: &mut SlideApp, ui: &mut egui::Ui) {
                 }
                 if out.response.has_focus() {
                     if let Some(r) = out.cursor_range {
-                        let idx = r.primary.index;
+                        let idx = r.primary.index.0;
                         let line = app.source.text.chars().take(idx).filter(|&c| c == '\n').count();
                         if app.source.caret_line != Some(line) {
                             app.source.caret_line = Some(line);
