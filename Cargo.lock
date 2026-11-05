@@ -1185,6 +1185,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "deckcraft-myslides"
+version = "0.15.0"
+dependencies = [
+ "deckcraft-model",
+ "serde_json",
+]
+
+[[package]]
 name = "deckcraft-ogg"
 version = "0.15.0"
 
